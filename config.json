@@ -1,0 +1,7 @@
+{
+  "username": "3250100324",
+  "password": "sly20070226#",
+  "chrome_driver_path": "./chrome/chrome/chromedriver.exe",
+  "output_dir": "./output",
+  "headless": false
+}
