@@ -7,6 +7,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from .colors import print_info, print_success, print_error, print_warning
 from .pdf import save_as_pdf
 
+# Constants
+RESPONSE_PREVIEW_LENGTH = 200  # Number of characters to preview in error messages
+
 
 def get_training_plans_via_js_api(driver, config):
     """
@@ -44,7 +47,7 @@ def get_training_plans_via_js_api(driver, config):
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {{
                 return response.text().then(text => {{
-                    return {{error: 'Response is not JSON. Content-Type: ' + contentType, body: text.substring(0, 200)}};
+                    return {{error: 'Unexpected response format. Expected JSON but received Content-Type: ' + contentType, body: text.substring(0, {RESPONSE_PREVIEW_LENGTH})}};
                 }});
             }}
             return response.json();
