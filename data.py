@@ -8,6 +8,7 @@ from .colors import print_info, print_success, print_error, print_warning
 from .pdf import save_as_pdf
 
 # Constants
+# Module-level constant for consistency across all functions that may need to preview response bodies
 RESPONSE_PREVIEW_LENGTH = 200  # Number of characters to preview in error messages
 
 
@@ -47,7 +48,7 @@ def get_training_plans_via_js_api(driver, config):
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {{
                 return response.text().then(text => {{
-                    return {{error: 'Unexpected response format. Expected JSON but received Content-Type: ' + contentType, body: text.substring(0, {RESPONSE_PREVIEW_LENGTH})}};
+                    return {{error: 'Unexpected response format. Expected JSON but received Content-Type: ' + (contentType || 'missing'), body: text.substring(0, {RESPONSE_PREVIEW_LENGTH})}};
                 }});
             }}
             return response.json();
