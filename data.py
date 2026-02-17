@@ -21,8 +21,11 @@ def get_training_plans_via_js_api(driver, config):
     if iframes:
         driver.switch_to.frame(iframes[0])
     
+    # 等待页面完全加载
+    time.sleep(2)
+    
     try:
-        # 使用JavaScript执行fetch请求获取数据
+        # 使用JavaScript执行fetch请求获取数据，增加响应类型检查
         js_code = f"""
         return fetch('/jwglxt/pyfagl/pyfaxxcx_cxPyfaxscxIndex.html?doType=query&gnmkdm=N153020', {{
             method: 'POST',
@@ -37,7 +40,15 @@ def get_training_plans_via_js_api(driver, config):
                 'queryModel.currentPage': '1'
             }}).toString()
         }})
-        .then(response => response.json())
+        .then(response => {{
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {{
+                return response.text().then(text => {{
+                    return {{error: 'Response is not JSON. Content-Type: ' + contentType, body: text.substring(0, 200)}};
+                }});
+            }}
+            return response.json();
+        }})
         .then(data => JSON.stringify(data))
         .catch(error => JSON.stringify({{error: error.toString()}}));
         """
@@ -78,7 +89,7 @@ def navigate_to_training_plan_page(driver):
         # 直接调用网站的onClickMenu函数
         driver.execute_script("onClickMenu('/pyfagl/pyfaxxcx_cxPyfaxscxIndex.html','N153020');")
         print_success("Called onClickMenu function successfully!")
-        time.sleep(3)
+        time.sleep(5)  # Increased wait time to ensure content loads
         return True
     except Exception as e:
         print_warning(f"onClickMenu call failed: {e}")
@@ -204,8 +215,8 @@ def fetch_training_plans(driver, config):
     
     # 方法1: 尝试通过JavaScript直接导航
     if navigate_to_training_plan_page(driver):
-        print_info("Navigation successful, waiting for content...")
-        time.sleep(3)
+        print_info("Navigation successful, waiting for content to load completely...")
+        time.sleep(5)  # Increased wait time to ensure page is fully loaded
         
         # 方法1a: 先尝试通过API获取数据
         plans_data = get_training_plans_via_js_api(driver, config)
